@@ -12,7 +12,7 @@ Here is a list of the pkgbuilds
 Archlinux :
 
 b43-fwcutter-git 		       Firmware extractor for the bcm43xx kernel module - git revision	
-buc 		                       BUC is the program which transforms common bash script in GUI applications written in QT	
+buc 		                       Transforms common bash script in GUI applications written in QT	
 burg-bzr 	                       A brand-new boot loader based on GRUB.	 
 burg-emu 	                       A brand-new boot loader based on GRUB.(emu)	
 burg-themes 	                       Themes for Burg Bootloader	 c
