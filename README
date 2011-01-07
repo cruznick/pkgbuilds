@@ -16,8 +16,8 @@ buc 		                       BUC is the program which transforms common bash scr
 burg-bzr 	                       A brand-new boot loader based on GRUB.	 
 burg-emu 	                       A brand-new boot loader based on GRUB.(emu)	
 burg-themes 	                       Themes for Burg Bootloader	 c
-compat-wireless-patched 	       compat wireless driver patched for fixing issues with "fixed-channel -1" and mac80211 patch from aircrack(stable)
-compat-wireless-patched-daily          compat wireless driver patched for fixing issues with "fixed-channel -1" and mac80211 patch from aircrack(daily builds)	 
+compat-wireless-patched 	       compat wireless drivers for aircrack(stable)
+compat-wireless-patched-daily          compat wireless drivers for aircrack(daily builds)	 
 covergloobus 		               A standalone application to see what is playing in the your favourite music player	  
 docky-stacks-bzr 	               Docky with stacks plugin (bzr branch)	 
 gio-sharp-commit 		       A branch of the official gtk-sharp/gio t(last working commit for docky)	
@@ -25,8 +25,8 @@ xf86driproto-git 	               X11 DRI extension wire protocol
 
 Chakra:
 
-aircrack-ng-svn 	 		Wifi security suite - WEP / WPA crack tools -- with SQLite3 and airolib-ng support.	 
-aircrack-ng-unstable-svn 		Wifi security suite - WEP / WPA crack tools -- with SQLite3 and unstable (read experimental) tools	 
+aircrack-ng-svn 	 		WEP / WPA crack tools -- with SQLite3 and airolib-ng support.	 
+aircrack-ng-unstable-svn 		WEP / WPA crack tools -- with SQLite3 and unstable (read experimental) tools	 
 b43-firmware 				Firmware for Broadcom B43 wireless networking chips	 
 bespin-black-icons 			Bespin/Tibanna ksplash themes	
 bespin-svn 1264-1			Bespin/Tibanna ksplash themes	 
