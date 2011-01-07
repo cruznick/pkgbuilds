@@ -1,0 +1,829 @@
+diff -Naur orig/usr/bin/burg-manager new/usr/bin/burg-manager
+--- orig/usr/bin/burg-manager	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/bin/burg-manager	2010-12-25 19:51:45.960000006 -0600
+@@ -1,10 +1,10 @@
+ #!/bin/bash
+ rootpw=`zenity --title="Root-Password" --window-icon=/usr/share/burg-manager/images/admin.png --text='please type root password' --hide-text="" --entry`
+-if [ -f ~/.burg-manager/language ]
++if [ -f /etc/burg-manager/language ]
+ then
+ echo $rootpw | sudo -S buc /usr/share/burg-manager/burg-manager.mc
+-elif [ ! -d ~/.burg-manager ]; then
+-mkdir ~/.burg-manager
++elif [ ! -f /etc/burg-manager/language ]
++then
+ echo $rootpw | sudo -S buc /usr/share/burg-manager/langchooser.mc
+ fi
+ unset rootpw
+diff -Naur orig/usr/share/burg-manager/addmenuentry new/usr/share/burg-manager/addmenuentry
+--- orig/usr/share/burg-manager/addmenuentry	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/addmenuentry	2010-12-25 15:29:39.870001272 -0600
+@@ -9,7 +9,7 @@
+ # mount | grep ^/dev | cut -d' ' -f1
+ # mount | grep ^/dev | cut -d' ' -f3
+ #mount | grep /media/WindowsSeven | cut -f 1,5 --delimiter=' '
+-iso=$(cat ~/.burg-manager/iso)
++iso=$(cat /etc/burg-manager/iso)
+ #iso='/media/WindowsSeven/Download/ISO\ VARIE/kubuntu-10.04-desktop-i386.iso'
+ isodir=$(dirname $iso)
+ isodir0=$isodir
+@@ -60,7 +60,7 @@
+ #indirizzo iso
+ isoaddr=$(echo $iso |sed 's:'$mountpoint'::')
+ ### leggere il tipo di iso dal file
+-tipo_iso=$(cat ~/.burg-manager/tipoiso)
++tipo_iso=$(cat /etc/burg-manager/tipoiso)
+ isofolder=$(echo $isodir0 |sed 's:'$mountpoint'::')
+ 
+ 
+@@ -307,4 +307,5 @@
+ sudo chmod a+x /etc/burg.d/50_iso
+ sudo update-burg
+ buc /usr/share/burg-manager/success.mc
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/arch-burg-installer new/usr/share/burg-manager/arch-burg-installer
+--- orig/usr/share/burg-manager/arch-burg-installer	1969-12-31 18:00:00.000000000 -0600
++++ new/usr/share/burg-manager/arch-burg-installer	2011-01-06 18:38:59.103333546 -0600
+@@ -0,0 +1,106 @@
++#!/bin/sh
++
++verde="\033[0;32m"
++rojo="\033[0;31m"
++morado="\033[0;35m"
++amarillo="\033[1;33m"
++grisclaro="\033[0;37m"
++normal="\033[0;0m"
++
++
++echo -ne "$verde"
++echo "Enter build folder" 
++
++	if [ -d /tmp/burg-manager-install ]
++	   then 
++		rm -rf /tmp/burg-manager-install/		
++		mkdir -p /tmp/burg-manager-install
++		cd /tmp/burg-manager-install
++	    else
++		mkdir -p /tmp/burg-manager-install
++		cd /tmp/burg-manager-install
++	 fi
++
++sleep 2 
++echo -ne "$verde"
++echo "Starting build..." 
++echo -ne "$rojo"
++echo "YOUR ROOT PASSWORD WILL BE NEEDED FOR INSTALLING DEPENDENCIES"
++echo -ne "$normal"
++
++	read -p "Do you wish to continue  (Y/n) > " r1
++	case $r1 in
++	    [Ss]* ) echo "continuing"  ;;
++	    n) echo "You can Install this later from AUR " && sleep 5 && exit ;;
++	*) echo "Continuing" ;;    
++ 	esac
++
++
++echo -ne "$verde"
++echo "Dowloading sources"
++burgi=$(pacman -Qq burg-bzr | wc -l)
++burei=$(pacman -Qq burg-emu | wc -l)
++burti=$(pacman -Qq burg-themes | wc -l)
++
++  if [ "$burgi" == 1  ]
++     then 
++	echo -ne "$verde"
++	echo Burg-brz already installed moving to next pkg
++     else
++	echo -ne "$grisclaro"
++	wget http://aur.archlinux.org/packages/burg-bzr/burg-bzr.tar.gz
++	tar xzf burg-bzr.tar.gz
++	cd burg-bzr
++	makepkg -sfi
++	cd .. 
++   fi
++
++  if [ "$burei" == 1  ]
++     then 
++	echo -ne "$verde"
++	echo Burg-emu already installed moving to next pkg
++     else
++	echo -ne "$grisclaro"
++	wget http://aur.archlinux.org/packages/burg-emu/burg-emu.tar.gz
++	tar xzf burg-emu.tar.gz
++	cd burg-emu
++	makepkg -sfi
++	cd ..
++   fi
++
++  if [ "$burti" == 1  ]
++     then 
++	echo -ne "$verde"
++	echo Burg-themes already installed moving to next pkg
++     else
++	echo -ne "$grisclaro"
++	wget http://aur.archlinux.org/packages/burg-themes/burg-themes.tar.gz
++	tar xzf burg-themes.tar.gz
++	cd burg-themes
++	makepkg -sfi
++	cd ..
++  fi
++
++unset burgi
++unset burei
++unset burti
++
++sleep 3 
++
++burgi=$(pacman -Qq burg-bzr | wc -l)
++burei=$(pacman -Qq burg-emu | wc -l)
++burti=$(pacman -Qq burg-themes | wc -l)
++
++  if [ "$burgi" == 1  ] && [ "$burei" == 1  ] && [ "$burti" == 1  ]
++     then
++	echo -ne "$verde"
++	echo "All pkgs succefully installed"
++	rm -rf /tmp/burg-manager-install
++	sleep 5 && exit 0
++     else
++	echo -ne "$rojo"
++	echo "Some pkgs didn't install please run again the installer"
++	rm -rf /tmp/burg-manager-install
++	sleep 5 && exit 1
++   fi
++  
+diff -Naur orig/usr/share/burg-manager/burg-manager.mc new/usr/share/burg-manager/burg-manager.mc
+--- orig/usr/share/burg-manager/burg-manager.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/burg-manager.mc	2011-01-06 20:12:43.583333564 -0600
+@@ -3,12 +3,12 @@
+ cd /usr/share/burg-manager/
+ bash global
+ bash /usr/share/burg-manager/notifier
+-bash listaos >> ~/.burg-manager/os
+-bash listaiso >> ~/.burg-manager/listaiso
+-sed -i '/./!d' ~/.burg-manager/os
++bash listaos >> /etc/burg-manager/os
++bash listaiso >> /etc/burg-manager/listaiso
++sed -i '/./!d' /etc/burg-manager/os
+ </global>
+ <global var="language">
+-language=$(cat ~/.burg-manager/language)
++language=$(cat /etc/burg-manager/language)
+ echo $language
+ </global>
+ <label> echo "BURG-Manager v 1.0.5 by IngAlex & Canopus0003 & Tux10" </label>
+@@ -39,8 +39,8 @@
+ <hlayout>
+ <label>echo " "</label>
+ <combobox var="disk" height="35">
+-mount | grep ^/dev | cut -d' ' -f1 | sed "s/[0-9]//g" | uniq > ~/.burg-manager/lol
+-cat ~/.burg-manager/lol
++mount | grep ^/dev | cut -d' ' -f1 | sed "s/[0-9]//g" | uniq > /etc/burg-manager/lol
++cat /etc/burg-manager/lol
+ </combobox>
+ <button height="35">
+ <title>
+@@ -48,8 +48,8 @@
+ echo $b1
+ </title>
+ <code>
+-sudo rm -rf ~/.burg-manager/disk 
+-echo $isotoremove >  ~/.burg-manager/disk 
++sudo rm -rf /etc/burg-manager/disk 
++echo $isotoremove >  /etc/burg-manager/disk 
+ bash /usr/share/burg-manager/installer
+ </code>
+ </button>
+@@ -114,7 +114,7 @@
+ echo $p3
+ </label>
+ <combobox var="operativesystem">
+-cat ~/.burg-manager/os
++cat /etc/burg-manager/os
+ </combobox>
+ <button>
+ <title>
+@@ -122,8 +122,8 @@
+ echo $b3
+ </title>
+ <code>
+-sudo rm -rf ~/.burg-manager/defaultos 
+-echo $operativesystem >  ~/.burg-manager/defaultos 
++sudo rm -rf /etc/burg-manager/defaultos 
++echo $operativesystem >  /etc/burg-manager/defaultos 
+ bash /usr/share/burg-manager/sceltaos
+ </code>
+ </button>
+@@ -138,13 +138,13 @@
+ echo $p4
+ </label>
+ <combobox var="risoluzione">
+-rm -rf ~/.burg-manager/risoluzioni1
+-xrandr > ~/.burg-manager/risoluzioni1
+-sed -i '/DFP/d' ~/.burg-manager/risoluzioni1
+-sed -i '/Screen/d' ~/.burg-manager/risoluzioni1
+-sed -i '/CRT/d' ~/.burg-manager/risoluzioni1
+-awk '{print $1}' ~/.burg-manager/risoluzioni1 > ~/.burg-manager/risoluzioni
+-cat ~/.burg-manager/risoluzioni
++rm -rf /etc/burg-manager/risoluzioni1
++xrandr > /etc/burg-manager/risoluzioni1
++sed -i '/DFP/d' /etc/burg-manager/risoluzioni1
++sed -i '/Screen/d' /etc/burg-manager/risoluzioni1
++sed -i '/CRT/d' /etc/burg-manager/risoluzioni1
++awk '{print $1}' /etc/burg-manager/risoluzioni1 > /etc/burg-manager/risoluzioni
++cat /etc/burg-manager/risoluzioni
+ </combobox>
+ <button height="35">
+ <title>
+@@ -198,7 +198,7 @@
+ echo $bk
+ </title>
+ <code>
+-xterm -e "sudo dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge"
++zenity --info --text This feature does not work in arch 
+ </code>
+ </button>
+ </hlayout>
+@@ -213,7 +213,7 @@
+ echo $br
+ </title>
+ <code>
+-sudo rm -rf /root/.burg-manager && rm -rf ~/.burg-manager && killall buc && burg-manager
++sudo rm -rf /etc/burg-manager && killall buc && burg-manager
+ </code>
+ </button>
+ </hlayout>
+@@ -465,132 +465,132 @@
+    <iconlist var="selezione" iconwidth="220" iconheight="120" mode="none">
+ <icon text="  A u t u m n" href="/usr/share/burg-manager/images/preview/autumn.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=5 && tar xzf click.php?id=5 && sudo rm -rf click.php?id=5 && sudo mv autumn /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=5 && tar xzf autumn.tar.gz && sudo rm -rf autumn.tar.gz  && sudo mv autumn /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="Magic" href="/usr/share/burg-manager/images/preview/magic.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=31 && tar xzf click.php?id=31 && sudo rm -rf click.php?id=31 && sudo mv magic /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=31 && tar xzf magic.tar.gz && sudo rm -rf magic.tar.gz && sudo mv magic /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  P i c c h i o" href="/usr/share/burg-manager/images/preview/picchio.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=17 && tar xzf click.php?id=17 && sudo rm -rf click.php?id=17 && sudo mv picchio /boot/burg/themes/ && sudo update-burg" 
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=17 && tar xzf picchio.tar.gz  && sudo rm -rf picchio.tar.gz && sudo mv picchio /boot/burg/themes/ && sudo update-burg" 
+ </ondoubleclick>
+ </icon>
+ <icon text="  G o l d e n s e a" href="/usr/share/burg-manager/images/preview/goldensea.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=22 && tar xzf click.php?id=22 && sudo rm -rf click.php?id=22 && sudo mv goldensea /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=22 && tar xzf goldensea.tar.gz && sudo rm -rf goldensea.tar.gz  && sudo mv goldensea /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  S e x y b u n t u" href="/usr/share/burg-manager/images/preview/sexybuntu.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=32 && tar xzf click.php?id=32 && sudo rm -rf click.php?id=32 && sudo mv sexybuntu /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=32 && tar xzf sexybuntu.tar.gz && sudo rm -rf sexybuntu.tar.gz && sudo mv sexybuntu /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  T u x - b u r g e r" href="/usr/share/burg-manager/images/preview/tux-burger.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=33 && tar xzf click.php?id=33 && sudo rm -rf click.php?id=33 && sudo mv tux-burger /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=33 && tar xzf tux-burger.tar.gz && sudo rm -rf tux-burger.tar.gz && sudo mv tux-burger /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  A b s t r a c t" href="/usr/share/burg-manager/images/preview/abstract.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=4 && tar xzf click.php?id=4 && sudo rm -rf click.php?id=4 && sudo mv abstract /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=4 && tar xzf abstract.tar.gz && sudo rm -rf abstract.tar.gz && sudo mv abstract /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon  text="  H o m e r" href="/usr/share/burg-manager/images/preview/homer.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=10 && tar xzf click.php?id=10 && sudo rm -rf click.php?id=10 && sudo mv homer /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=10 && tar xzf homer.tar.gz && sudo rm -rf homer.tar.gz && sudo mv homer /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon> 
+ <icon  text="  D a r k  S h i n e" href="/usr/share/burg-manager/images/preview/darkshine.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=8 && tar xzf click.php?id=8 && sudo rm -rf click.php?id=8 && sudo mv dark_shine /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=8 && tar xzf darkshine.tar.gz && sudo rm -rf darkshine.tar.gz && sudo mv dark_shine /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>  
+ <icon  text="  R a d i a n c e" href="/usr/share/burg-manager/images/preview/radiance.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=18 && tar xzf click.php?id=18 && sudo rm -rf click.php?id=18 && sudo mv radiance /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=18 && tar xzf radiance.tar.gz && sudo rm -rf radiance.tar.gz && sudo mv radiance /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon  text="  K u b u n t u" href="/usr/share/burg-manager/images/preview/orange.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=11 && tar xzf click.php?id=11 && sudo rm -rf click.php?id=11 && sudo mv kubuntu /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=11 && tar xzf orange.tar.gz && sudo rm -rf orange.tar.gz && sudo mv kubuntu /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon  text="  K u b u n t u B r a n d" href="/usr/share/burg-manager/images/preview/kubuntu_brand.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=12 && tar xzf click.php?id=12 && sudo rm -rf click.php?id=12 && sudo mv kubuntu_brand /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=12 && tar xzf kubuntu_brand.tar.gz && sudo rm -rf kubuntu_brand.tar.gz && sudo mv kubuntu_brand /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon> 
+ <icon text="  U b u n t u B r a n d" href="/usr/share/burg-manager/images/preview/ubuntu_brand.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=19 && tar xzf click.php?id=19 && sudo rm -rf click.php?id=19 && sudo mv ubuntu_brand /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=19 && tar xzf ubuntu_brand.tar.gz && sudo rm -rf ubuntu_brand.tar.gz  && sudo mv ubuntu_brand /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  G n o m e" href="/usr/share/burg-manager/images/preview/gnome1.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=9 && tar xzf click.php?id=9 && sudo rm -rf click.php?id=9 && sudo mv Gnome /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=9 && tar xzf gnome1.tar.gz && sudo rm -rf gnome1.tar.gz && sudo mv Gnome /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  U b u n t u W a l l" href="/usr/share/burg-manager/images/preview/ubuntu_wall.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=20 && tar xzf click.php?id=20 && sudo rm -rf click.php?id=20 && sudo mv ubuntu_wall /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=20 && tar xzf ubuntu_wall.tar.gz && sudo rm -rf ubuntu_wall.tar.gz && sudo mv ubuntu_wall /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  K u b u n t u W a l l " href="/usr/share/burg-manager/images/preview/kubuntu_wall.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=13 && tar xzf click.php?id=13 && sudo rm -rf click.php?id=13 && sudo mv kubuntu_wall /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=13 && tar xzf kubuntu_wall.tar.gz && sudo rm -rf kubuntu_wall.tar.gz && sudo mv kubuntu_wall /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="  V i t r u v i o" href="/usr/share/burg-manager/images/preview/vitruvio.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=21 && tar xzf click.php?id=21 && sudo rm -rf click.php?id=21z && sudo mv vitruvio /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=21 && tar xzf vitruvio.tar.gz && sudo rm -rf vitruvio.tar.gz && sudo mv vitruvio /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="M i n i m a l" href="/usr/share/burg-manager/images/preview/minimal.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=3 && tar xzf click.php?id=3 && sudo rm -rf click.php?id=3 && sudo mv minimal /boot/burg/themes/ && sudo mv minimaltext /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=3 && tar xzf minimal.tar.gz && sudo rm -rf minimal.tar.gz && sudo mv minimal /boot/burg/themes/ && sudo mv minimaltext /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="M i n t" href="/usr/share/burg-manager/images/preview/mint.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=23 && tar xzf click.php?id=23 && sudo rm -rf click.php?id=23 && sudo mv mint /boot/burg/themes/ && sudo mv mint_text_below /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=23 && tar xzf mint.tar.gz && sudo rm -rf mint.tar.gz && sudo mv mint /boot/burg/themes/ && sudo mv mint_text_below /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="W a s p" href="/usr/share/burg-manager/images/preview/wasp.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=7 && tar xzf click.php?id=7 && sudo rm -rf click.php?id=7 && sudo mv wasp /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=7 && tar xzf wasp.tar.gz && sudo rm -rf wasp.tar.gz && sudo mv wasp /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="S u n s e t" href="/usr/share/burg-manager/images/preview/sunset.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=6 && tar xzf click.php?id=6 && sudo rm -rf click.php?id=6 && sudo mv sunset /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=6 && tar xzf sunset.tar.gz && sudo rm -rf sunset.tar.gz && sudo mv sunset /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="H o r t e n s i a" href="/usr/share/burg-manager/images/preview/hortensia.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=24 && tar xzf click.php?id=24 && sudo rm -rf click.php?id=24 && sudo mv hortensia /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=24 && tar xzf hortensia.tar.gz && sudo rm -rf hortensia.tar.gz && sudo mv hortensia /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="F o r t u n e" href="/usr/share/burg-manager/images/preview/fortune.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=28 && tar xzf click.php?id=28 && sudo rm -rf click.php?id=28 && sudo mv fortune /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=28 && tar xzf fortune.tar.gz && sudo rm -rf fortune.tar.gz && sudo mv fortune /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="K u b u n t u - E O S" href="/usr/share/burg-manager/images/preview/kubuntu_EOS.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=27 && tar xzf click.php?id=27 && sudo rm -rf click.php?id=27 && sudo mv kubuntu_EOS /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=27 && tar xzf kubuntu_EOS.tar.gz && sudo rm -rf kubuntu_EOS.tar.gz && sudo mv kubuntu_EOS /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="M i n i m a l  b y  S i r" href="/usr/share/burg-manager/images/preview/minimal_by_sir.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=29 && tar xzf click.php?id=29 && sudo rm -rf click.php?id=29 && sudo mv minimal_by_sir /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=29 && tar xzf minimal_by_sir.tar.gz && sudo rm -rf minimal_by_sir.tar.gz && sudo mv minimal_by_sir /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ <icon text="G o g o - n o g e - h o t - l e g s" href="/usr/share/burg-manager/images/preview/gogo-noge-hot-legs.png">
+ <ondoubleclick>
+-xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=30 && tar xzf click.php?id=30 && sudo rm -rf click.php?id=30 && sudo mv gogo-noge-hot-legs /boot/burg/themes/ && sudo update-burg"
++xterm -e  "wget http://www.sourceslist.eu/ccount/click.php?id=30 && tar xzf gogo-noge-hot-legs.tar.gz  && sudo rm -rf gogo-noge-hot-legs.tar.gz && sudo mv gogo-noge-hot-legs /boot/burg/themes/ && sudo update-burg"
+ </ondoubleclick>
+ </icon>
+ </iconlist>
+@@ -623,7 +623,7 @@
+ echo $b7
+ </title>
+ <code>
+-xterm -e "sudo apt-get remove --purge burg burg-themes burg-emu"
++xterm -e "sudo pacman -Rd burg-bzr burg-emu burg-themes"
+ </code>
+ </button>
+ <label>echo " "</label>
+@@ -640,8 +640,8 @@
+ echo $p8 
+ </label>
+ <combobox var="disk1" height="45">
+-mount | grep ^/dev | cut -d' ' -f1 | sed "s/[0-9]//g" | uniq > ~/.burg-manager/lol
+-cat ~/.burg-manager/lol
++mount | grep ^/dev | cut -d' ' -f1 | sed "s/[0-9]//g" | uniq > /etc/burg-manager/lol
++cat /etc/burg-manager/lol
+ </combobox>
+ <button height="45">
+ <title>
+@@ -707,9 +707,9 @@
+ echo $ai
+ </title>
+ <code>
+-rm -rf ~/.burg-manager/tipoiso ~/.burg-manager/iso
+-echo $tipoiso > ~/.burg-manager/tipoiso
+-echo $isourl > ~/.burg-manager/iso
++rm -rf /etc/burg-manager/tipoiso /etc/burg-manager/iso
++echo $tipoiso > /etc/burg-manager/tipoiso
++echo $isourl > /etc/burg-manager/iso
+ cd /usr/share/burg-manager/
+ bash addmenuentry
+ </code>
+@@ -726,7 +726,7 @@
+ echo $pp3
+ </label>
+ <combobox var="isotoremove">
+-cat ~/.burg-manager/listaiso
++cat /etc/burg-manager/listaiso
+ </combobox>
+ <hlayout>
+ <label>echo " "</label>
+@@ -736,8 +736,8 @@
+ echo $bb3
+ </title>
+ <code>
+-sudo rm -rf ~/.burg-manager/isotoremove 
+-echo $isotoremove >  ~/.burg-manager/isotoremove 
++sudo rm -rf /etc/burg-manager/isotoremove 
++echo $isotoremove >  /etc/burg-manager/isotoremove 
+ bash /usr/share/burg-manager/isoremover
+ </code>
+ </button>
+@@ -801,6 +801,10 @@
+ echo "Swedish localization - Robert Blomqvist <robbe81@gmail.com>"
+ echo "Romanian localization - Marius Bob <znupii@znupii.ro> (www.znupii.ro)"
+ echo
++echo "ARCHLINUX & CHAKRA VERSION"
++echo "Benjamin Martinez - Cruznick <cruznick@archlinux.us> (www.archydeb.wordpress.com)"
++
++echo
+ echo "THEMES"
+ echo
+ echo "Rights reserved to the authors. All themes are licensed under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 License."
+diff -Naur orig/usr/share/burg-manager/cleaner new/usr/share/burg-manager/cleaner
+--- orig/usr/share/burg-manager/cleaner	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/cleaner	2011-01-06 17:37:08.540000214 -0600
+@@ -1,9 +1,10 @@
+ #!/bin/bash
+-if [ -d ~/.burg-manager ]
+-then sudo rm -rf /root/.burg-manager ~/.burg-manager/listaiso ~/.burg-manager/lol ~/.burg-manager/os ~/.burg-manager/risoluzioni ~/.burg-manager/risoluzioni1 ~/.burg-manager/iso ~/.burg-manager/tipoiso
++if [ -d /etc/burg-manager ]
++then sudo rm -rf /etc/burg-manager/listaiso /etc/burg-manager/lol /etc/burg-manager/os /etc/burg-manager/risoluzioni /etc/burg-manager/risoluzioni1 /etc/burg-manager/iso /etc/burg-manager/tipoiso
+ else
+-mkdir ~/.burg-manager
++mkdir /etc/burg-manager
+ fi 
+ cd /usr/share/burg-manager/
+ sudo rm -rf 1* 2* 3* 4* 5* 6* 7* 8* 9* 0*
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/global new/usr/share/burg-manager/global
+--- orig/usr/share/burg-manager/global	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/global	2011-01-06 17:37:22.786666879 -0600
+@@ -3,4 +3,5 @@
+ cd /usr/share/burg-manager/
+ ./killlang
+ ./cleaner
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/grub_cmdline new/usr/share/burg-manager/grub_cmdline
+--- orig/usr/share/burg-manager/grub_cmdline	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/grub_cmdline	2011-01-06 17:37:32.816666879 -0600
+@@ -1,3 +1,4 @@
+ #!/bin/bash
+ sed -n -e '/^GRUB_CMDLINE_LINUX_DEFAULT/p' /etc/default/grub| awk -F[\'\"] '{print $2}' 
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/help1.mc new/usr/share/burg-manager/help1.mc
+--- orig/usr/share/burg-manager/help1.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/help1.mc	2011-01-06 17:38:06.100000213 -0600
+@@ -1,6 +1,6 @@
+ <config>
+ <global var="language">
+-language=$(cat ~/.burg-manager/language)
++language=$(cat /etc/burg-manager/language)
+ echo $language
+ </global>
+ <img src="/usr/share/burg-manager/images/help.png" align="center" /> 
+@@ -25,4 +25,5 @@
+ bash /usr/share/burg-manager/killpop
+ </code>
+ </button><label>echo " "</label></hlayout>
+-</config> 
++</config>
++ 
+diff -Naur orig/usr/share/burg-manager/installer new/usr/share/burg-manager/installer
+--- orig/usr/share/burg-manager/installer	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/installer	2011-01-06 18:23:35.403333547 -0600
+@@ -1,6 +1,11 @@
+ #!/bin/bash
+-disk=$(cat ~/.burg-manager/disk)
+-xterm -e "sudo add-apt-repository ppa:bean123ch/burg && sudo apt-get update && sudo apt-get install burg burg-themes burg-emu"
++disk=$(cat /etc/burg-manager/disk)
++usrnm=`zenity --title="Non Root User name" --window-icon=/usr/share/burg-manager/images/admin.png \
++--text='As makepkg needs to be run as a non root user please type\
++ your user name' --width=100 --entry`
++xterm -e "sudo -u $usrnm bash /usr/share/burg-manager/arch-burg-installer"
+ xterm -e "sudo burg-install $disk && sudo update-burg"
+ buc /usr/share/burg-manager/success.mc
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++unset usrnm
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/isoremover new/usr/share/burg-manager/isoremover
+--- orig/usr/share/burg-manager/isoremover	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/isoremover	2011-01-06 17:39:15.310000213 -0600
+@@ -4,14 +4,15 @@
+ #mtr=$(sed -e '/./{H;$!d;}' -e 'x;/$isotoremove/!d;' /etc/burg.d/50_ubuntu_iso)
+ 
+ #id menuentry
+-rtot=$(wc -l  ~/.burg-manager/listaiso | awk '{print $1}')
+-toremove=$(cat ~/.burg-manager/isotoremove) 
+-idm=$(grep -n -i -x "$toremove" ~/.burg-manager/listaiso| awk '{print $1}'| tr -cd [:digit:])
++rtot=$(wc -l  /etc/burg-manager/listaiso | awk '{print $1}')
++toremove=$(cat /etc/burg-manager/isotoremove) 
++idm=$(grep -n -i -x "$toremove" /etc/burg-manager/listaiso| awk '{print $1}'| tr -cd [:digit:])
+ GD=$(($rtot-$idm+1))
+ #cancella paragrafo $GD
+-sudo awk 'BEGIN{RS=""; ORS="\n\n"}; NR!='$GD'' /etc/burg.d/50_iso > ~/.burg-manager/50_iso
+-sudo rm -rf /etc/burg.d/50_iso && sudo mv ~/.burg-manager/50_iso /etc/burg.d/
++sudo awk 'BEGIN{RS=""; ORS="\n\n"}; NR!='$GD'' /etc/burg.d/50_iso > /etc/burg-manager/50_iso
++sudo rm -rf /etc/burg.d/50_iso && sudo mv /etc/burg-manager/50_iso /etc/burg.d/
+ sudo chmod a+x /etc/burg.d/50_iso
+ sudo update-burg
+ buc /usr/share/burg-manager/success.mc
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/killlang new/usr/share/burg-manager/killlang
+--- orig/usr/share/burg-manager/killlang	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/killlang	2011-01-06 17:38:00.280000213 -0600
+@@ -7,9 +7,10 @@
+ kill $a
+ fi
+ exit 0 
++
+ # if [ "$a" -gt "$b" ]; then
+ # kill $b
+ # elif [ "$b" -gt "$a" ]; then
+ # kill $a
+ # fi
+- 
+\ No hay ningún carácter de nueva línea al final del fichero
++ 
+diff -Naur orig/usr/share/burg-manager/killpop new/usr/share/burg-manager/killpop
+--- orig/usr/share/burg-manager/killpop	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/killpop	2011-01-06 17:39:09.490000215 -0600
+@@ -6,4 +6,5 @@
+ elif [ "$b" > "$a" ]; then
+ kill $b
+ fi
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/langchooser.mc new/usr/share/burg-manager/langchooser.mc
+--- orig/usr/share/burg-manager/langchooser.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/langchooser.mc	2011-01-06 17:39:04.220000215 -0600
+@@ -48,35 +48,36 @@
+      </icon>
+ <ondoubleclick>
+ if [ "$language" = "italian" ]; then
+-echo it > ~/.burg-manager/language
++echo it > /etc/burg-manager/language
+ elif [ "$language" = "english" ]; then
+-echo en > ~/.burg-manager/language
++echo en > /etc/burg-manager/language
+ elif [ "$language" = "croatian" ]; then
+-echo hr > ~/.burg-manager/language
++echo hr > /etc/burg-manager/language
+ elif [ "$language" = "brazilian" ]; then
+-echo ptbr > ~/.burg-manager/language
++echo ptbr > /etc/burg-manager/language
+ elif [ "$language" = "portuguese" ]; then
+-echo ptpt > ~/.burg-manager/language
++echo ptpt > /etc/burg-manager/language
+ elif [ "$language" = "indonesian" ]; then
+-echo id > ~/.burg-manager/language
++echo id > /etc/burg-manager/language
+ elif [ "$language" = "french" ]; then
+-echo fr > ~/.burg-manager/language
++echo fr > /etc/burg-manager/language
+ elif [ "$language" = "german" ]; then
+-echo de > ~/.burg-manager/language
++echo de > /etc/burg-manager/language
+ elif [ "$language" = "romanian" ]; then
+-echo ro > ~/.burg-manager/language
++echo ro > /etc/burg-manager/language
+ elif [ "$language" = "spanish" ]; then
+-echo es > ~/.burg-manager/language
++echo es > /etc/burg-manager/language
+ elif [ "$language" = "swedish" ]; then
+-echo se > ~/.burg-manager/language
++echo se > /etc/burg-manager/language
+ elif [ "$language" = "hungarian" ]; then
+-echo hu > ~/.burg-manager/language
++echo hu > /etc/burg-manager/language
+ elif [ "$language" = "dutch" ]; then
+-echo nl > ~/.burg-manager/language
++echo nl > /etc/burg-manager/language
+ elif [ "$language" = "polish" ]; then
+-echo pl > ~/.burg-manager/language
++echo pl > /etc/burg-manager/language
+ fi
+ buc /usr/share/burg-manager/burg-manager.mc
+ </ondoubleclick>
+  </iconlist>
+ </config>
++
+diff -Naur orig/usr/share/burg-manager/listaiso new/usr/share/burg-manager/listaiso
+--- orig/usr/share/burg-manager/listaiso	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/listaiso	2011-01-06 17:38:55.406666880 -0600
+@@ -9,4 +9,5 @@
+ i=$(($linenum-1))
+ linenum=$i
+ done
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/listaos new/usr/share/burg-manager/listaos
+--- orig/usr/share/burg-manager/listaos	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/listaos	2011-01-06 17:37:46.626666879 -0600
+@@ -26,4 +26,5 @@
+ i=$(($linenum-1))
+ linenum=$i
+ done
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/notifier new/usr/share/burg-manager/notifier
+--- orig/usr/share/burg-manager/notifier	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/notifier	2011-01-06 19:20:59.193333546 -0600
+@@ -1,12 +1,13 @@
+ #!/bin/bash
+-cd ~/.burg-manager
++cd /etc/burg-manager
+ wget http://www.sourceslist.eu/ccount/click.php?id=25
+-now=$(cat ~/.burg-manager/click.php?id=25|tr -d ".")
+-rm -rf ~/.burg-manager/click.php?id=25
++now=$(cat /etc/burg-manager/version|tr -d ".")
++rm -rf /etc/burg-manager/version
+ installed=$(cat /usr/share/burg-manager/version|tr -d ".")
+ #installed=$(cat /usr/share/burg-manager/version)
+ if [ "$now" -gt "$installed" ] ; 
+ then
+ buc /usr/share/burg-manager/updateavaible.mc
+ fi
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++
+diff -Naur orig/usr/share/burg-manager/sceltaos new/usr/share/burg-manager/sceltaos
+--- orig/usr/share/burg-manager/sceltaos	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/sceltaos	2011-01-06 17:38:12.190000213 -0600
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+-rtot=$(wc -l  ~/.burg-manager/os | awk '{print $1}')
+-osd=$(cat ~/.burg-manager/defaultos)  
+-OSYS=$(grep -n -i -x "$osd" ~/.burg-manager/os| awk '{print $1}'| tr -cd [:digit:])
++rtot=$(wc -l  /etc/burg-manager/os | awk '{print $1}')
++osd=$(cat /etc/burg-manager/defaultos)  
++OSYS=$(grep -n -i -x "$osd" /etc/burg-manager/os| awk '{print $1}'| tr -cd [:digit:])
+ GD=$(($rtot-$OSYS))
+ sudo sed -i 's/GRUB_DEFAULT=[0-9]*/GRUB_DEFAULT='$GD'/g' /etc/default/burg
+ # for (( I=0 ; I<${#input[*]} ; I++ ))
+@@ -11,3 +11,4 @@
+ # xterm -e "sudo sed -i 's/GRUB_DEFAULT=[0-9]*/GRUB_DEFAULT=$GD/g' /etc/default/burg"
+ # fi    
+ # done 
++
+diff -Naur orig/usr/share/burg-manager/success.mc new/usr/share/burg-manager/success.mc
+--- orig/usr/share/burg-manager/success.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/success.mc	2011-01-06 17:38:17.653333547 -0600
+@@ -1,6 +1,6 @@
+ <config>
+ <global var="language">
+-language=$(cat ~/.burg-manager/language)
++language=$(cat /etc/burg-manager/language)
+ echo $language
+ </global>
+ <img src="/usr/share/burg-manager/images/OK.png" align="center" /> 
+@@ -19,3 +19,4 @@
+ </button>
+ </hlayout>
+ </config>
++
+diff -Naur orig/usr/share/burg-manager/.temp new/usr/share/burg-manager/.temp
+--- orig/usr/share/burg-manager/.temp	1969-12-31 18:00:00.000000000 -0600
++++ new/usr/share/burg-manager/.temp	2011-01-06 19:28:04.420000213 -0600
+@@ -0,0 +1,11 @@
++#/bin/bash
++BUC_MY_PID="18497"
++
++
++cd /usr/share/burg-manager/
++bash global
++bash /usr/share/burg-manager/notifier
++bash listaos >> /etc/burg-manager/os
++bash listaiso >> /etc/burg-manager/listaiso
++sed -i '/./!d' /etc/burg-manager/os
++
+diff -Naur orig/usr/share/burg-manager/updateavaible.mc new/usr/share/burg-manager/updateavaible.mc
+--- orig/usr/share/burg-manager/updateavaible.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/updateavaible.mc	2011-01-06 19:23:37.733333547 -0600
+@@ -1,6 +1,6 @@
+ <config>
+ <global var="language">
+-language=$(cat ~/.burg-manager/language)
++language=$(cat /etc/burg-manager/language)
+ echo $language
+ </global>
+ <img src="/usr/share/burg-manager/images/attention.png" align="center" /> 
+@@ -16,13 +16,7 @@
+ echo $yes
+ </title>
+ <code>
+-cd ~/.burg-manager/
+-wget http://www.sourceslist.eu/ccount/click.php?id=26
+-mv click.php\?id\=26 burg-manager.deb
+-sudo dpkg -i burg-manager.deb
+-a=$(pidof buc)
+-kill $a
+-burg-manager
++zenity --info --text Please update with an Aur helper
+ </code>
+ </button>
+ <button>
+@@ -42,3 +36,4 @@
+ echo $qtt
+ </label>
+ </config>
++
+diff -Naur orig/usr/share/burg-manager/updatenotavaible.mc new/usr/share/burg-manager/updatenotavaible.mc
+--- orig/usr/share/burg-manager/updatenotavaible.mc	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/updatenotavaible.mc	2011-01-06 17:38:22.246666880 -0600
+@@ -1,6 +1,6 @@
+ <config>
+ <global var="language">
+-language=$(cat ~/.burg-manager/language)
++language=$(cat /etc/burg-manager/language)
+ echo $language
+ </global>
+ <img src="/usr/share/burg-manager/images/attention.png" align="center" /> 
+@@ -18,3 +18,4 @@
+ </code>
+ </button>
+ </config>
++
+diff -Naur orig/usr/share/burg-manager/updater new/usr/share/burg-manager/updater
+--- orig/usr/share/burg-manager/updater	2010-12-06 08:54:11.000000000 -0600
++++ new/usr/share/burg-manager/updater	2011-01-06 17:38:44.346666880 -0600
+@@ -1,8 +1,8 @@
+ #!/bin/bash
+-cd ~/.burg-manager
+-wget http://www.sourceslist.eu/ccount/click.php?id=25
+-now=$(cat ~/.burg-manager/click.php?id=25|tr -d ".")
+-rm -rf ~/.burg-manager/click.php?id=25
++cd /etc/burg-manager
++wget http://www.sourceslist.eu/ccount/version
++now=$(cat /etc/burg-manager/click.php?id=25|tr -d ".")
++rm -rf /etc/burg-manager/version
+ installed=$(cat /usr/share/burg-manager/version)
+ if [ "$now" -gt "$installed" ] ; 
+ then
+@@ -10,4 +10,5 @@
+ else
+ buc /usr/share/burg-manager/updatenotavaible.mc
+ fi
+-exit 0
+\ No hay ningún carácter de nueva línea al final del fichero
++exit 0
++

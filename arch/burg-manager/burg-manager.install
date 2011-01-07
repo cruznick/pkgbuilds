@@ -1,0 +1,4 @@
+post_remove() {
+  rm -fr /etc/burg-manager
+  rm /etc/burg.d/50_iso
+}

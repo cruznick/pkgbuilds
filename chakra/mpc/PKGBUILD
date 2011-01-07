@@ -1,0 +1,23 @@
+# Contributor Benjamin Mtz (cruznick) <cruznick at archlinux dot us>
+
+pkgname=mpc
+pkgver=0.19
+pkgrel=1
+pkgdesc="A minimalist command line interface to MPD, not to be confused with musepack"
+arch=('i686' 'x86_64')
+url="http://mpd.wikia.com/wiki/Client:Mpc"
+license=('GPL2')
+depends=('libmpdclient')
+source=(http://downloads.sourceforge.net/musicpd/${pkgname}-$pkgver.tar.bz2)
+md5sums=('9ab2967d9ec719b06a86f3b4121be654')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  ./configure --prefix=/usr || return 1
+  make || return 1
+  make DESTDIR="$pkgdir" install || return 1
+
+  # Install needen for bash completion 
+  install -D -m644 doc/mpc-completion.bash "$pkgdir/etc/bash_completion.d/mpc" || return 1
+}

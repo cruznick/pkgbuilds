@@ -1,0 +1,78 @@
+# Maintainer: Benjamin Mtz (Cruznick) <cruznick at archlinux dot us>
+
+pkgname=compat-wireless-patched
+srcname=compat-wireless
+pkgver=2.6.35
+pkgrel=1
+pkgdesc='compat wireless driver patched for fixing issues with "fixed-channel -1" and mac80211 patch from aircrack(stable)'
+arch=('i686' 'x86_64')
+url='http://wireless.kernel.org/'
+license=('GPL')
+depends=('kernel26')
+makedepends=('linux-api-headers' 'kernel26-headers')
+install=compat-wireless-patched.install
+source=(http://www.orbit-lab.org/kernel/compat-wireless-2.6-stable/v2.6.35/$srcname-$pkgver-$pkgrel.tar.bz2 'mac80211_2.6.32.2-wl_frag+ack_radiotap.patch' 'channel-negative-one-maxim.patch')
+sha1sums=('95a44314284e68ea8902b42bd7a41e0b613efe64'
+	  '2af535ba85f6d7d5f51601d18e45171d8bb3c9f4' 
+          'a611acdd7994b07b0b39417ef7a5a6ffc866a733')
+changelog=$pkgname.changelog
+
+	###--Drivers-options--##
+	# Supported 802.11 drivers:
+	#	ath5k
+	#	ath9k
+	#	ath9k_htc
+	#	ar9170
+	#	b43
+	#	zd1211rw
+	#	rt2x00
+
+	# Supported Ethernet drivers:
+	#	atl1
+	#	atl2
+	#	atl1e
+	#	atl1c
+
+	# Supported groups of drivers:
+	# atheros <  ath5k ath9k ar9170 zd1211rw >
+	# ath <  ath5k ath9k ar9170 >
+	# intel <  iwl3945 iwlagn ipw2100 ipw2200 >
+	# iwlwifi <  iwl3945 iwlagn >
+	# rtl818x <  rtl8180 rtl8187 >
+	# wl12xx <  wl1251 (SPI and SDIO) wl1271 >
+
+
+build() {
+
+
+  cd "$srcdir/$srcname-$pkgver-$pkgrel"
+  
+  #Patching 
+
+  patch -p1 -i ${srcdir}/mac80211_2.6.32.2-wl_frag+ack_radiotap.patch || return 1 
+  patch -p1 -i ${srcdir}/channel-negative-one-maxim.patch || return 1 
+
+
+  ##select driver and uncomment (options above) 
+  #scripts/driver-select <driver> || return 1
+
+  ##uncomment if you encounter problems with rt2870 
+  #sed -i 's/^\# CONFIG_RT2800USB_RT30XX/CONFIG_RT2800USB_RT30XX/' config.mk
+
+  make || return 1
+  make INSTALL_MOD_PATH=$pkgdir install-modules || return 1
+  install -dm755 $pkgdir/usr/sbin
+  install -dm755 $pkgdir/lib/udev/rules.d
+  install -dm755 $pkgdir/usr/lib/compat-wireless
+  install scripts/madwifi-unload	$pkgdir/usr/sbin/
+  install scripts/athenable		$pkgdir/usr/sbin/
+  install scripts/b43enable		$pkgdir/usr/sbin/
+  install scripts/iwl-enable		$pkgdir/usr/sbin/
+  install scripts/athload		$pkgdir/usr/sbin/
+  install scripts/b43load		$pkgdir/usr/sbin/
+  install scripts/iwl-load		$pkgdir/usr/sbin/
+  install udev/compat_firmware.sh	$pkgdir/lib/udev/
+  install udev/50-compat_firmware.rules $pkgdir/lib/udev/rules.d/
+  install scripts/modlib.sh		$pkgdir/usr/lib/compat-wireless/
+  install scripts/check_depmod  	$pkgdir/usr/lib/compat-wireless/
+}
