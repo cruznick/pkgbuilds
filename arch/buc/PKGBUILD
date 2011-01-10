@@ -22,6 +22,11 @@ md5sums=('0e35e0bf8a447170428ff0e570629813'
 	 '88cfeca6c14a3eb4b6dfdd026aaf3357') # path-fixes.patch
 build() {
   cd "$srcdir/zip/"
+
+  # removing unnecesary stuff
+  rm -v bucd/usr/local/buc/libQtCore.so.4
+  rm -v bucd/usr/local/buc/libQtGui.so.4
+  rm -v bucd/usr/local/buc/buc
   #  patch to facilitate compilation
   patch -Np1 -i  ${srcdir}/gcc-fixes.patch
   # patch to fix paths (usr/local to usr/share)
@@ -31,7 +36,8 @@ build() {
   # create dirs and move things to right places
   mkdir -p $pkgdir/usr/bin
   mkdir -p $pkgdir/usr/share/buc
-  cp -R bucd/usr/share/* $pkgdir/usr/share
-  cp -R bucd/usr/local/buc/ $pkgdir/usr/share
-  cp -R bucd/usr/local/bin/ $pkgdir/usr/
+  cp -Rv bucd/usr/share/* $pkgdir/usr/share
+  cp -Rv bucd/usr/local/buc/ $pkgdir/usr/share
+  cp -Rv bucd/usr/local/bin/ $pkgdir/usr/
+  cp -Rv buc $pkgdir/usr/share/buc/
  }
