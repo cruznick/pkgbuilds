@@ -10,9 +10,9 @@ license=('GPL')
 groups=('devel')
 install=buc.install
 if [ "$CARCH" == "x86_64" ];then
- depends=('lib32-libpng12' 'qt')
+ depends=('libpng' 'qt')
 else
- depends=('libpng12' 'qt')
+ depends=('libpng' 'qt')
 fi
 source=(http://buc.intilinux.com/download/$pkgname-${pkgver}_src_full.tar.gz \
          'gcc-fixes.patch' 'path-fixes.patch')
