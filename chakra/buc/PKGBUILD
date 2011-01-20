@@ -9,11 +9,7 @@ url="http://buc.billeragroup.net"
 license=('GPL')
 groups=('devel')
 install=buc.install
-if [ "$CARCH" == "x86_64" ];then
- depends=('libpng' 'qt')
-else
- depends=('libpng' 'qt')
-fi
+depends=('libpng' 'qt')
 source=(http://buc.intilinux.com/download/$pkgname-${pkgver}_src_full.tar.gz \
          'gcc-fixes.patch' 'path-fixes.patch')
 md5sums=('0e35e0bf8a447170428ff0e570629813'
