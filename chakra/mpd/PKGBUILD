@@ -1,5 +1,4 @@
 # Maintainer: Benjamin Mtz (cruznick) <cruznick at archlinux dot us>
-
 pkgname=mpd
 pkgver=0.16
 pkgrel=2
@@ -8,23 +7,25 @@ arch=('i686' 'x86_64')
 license=('GPL')
 url="http://mpd.wikia.com/wiki/Server"
 depends=('libao' 'ffmpeg' 'libmodplug' 'audiofile' 'libshout' 'libmad' 'curl' 'faad2'
-         'sqlite3' 'libsamplerate' 'libmms' 'wavpack' 'libmpcdec' 'avahi' 'libid3tag')
-makedepends=('pkgconfig')
+         'sqlite3' 'libsamplerate' 'libmms' 'wavpack' 'libmpcdec' 'avahi' 'libid3tag'
+         'libpulse')
+makedepends=('pkgconfig' 'doxygen')
 install=${pkgname}.install
 source=("http://downloads.sourceforge.net/musicpd/${pkgname}-${pkgver}.tar.bz2"
         'mpd')
 md5sums=('3fc8ccc4488cbaadc1a10f415eada35f'
          'e5669c2bff4031928531e52475addeb1')
-changelog=$pkgname.changelog
 
 build() {
   cd ${srcdir}/${pkgname}-${pkgver}
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --enable-lastfm \
+    --enable-pulse \
+    --enable-documentation \
+    --disable-libwrap \
     --disable-cue \
-    --disable-sidplay \
-    --disable-pulse
+    --disable-sidplay 
   make
 }
 
