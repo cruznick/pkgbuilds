@@ -1,42 +1,20 @@
 # Contributor: cruznick <cruznick@archlinux.us>
 
 pkgname=burg-manager
-pkgver=1.0.5
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="Graphical manager for Burg bootloader"
 arch=('i686' 'x86_64')
-url="http://buc.billeragroup.net"
+url="http://www.sourceslist.eu/burg-manager/"
 license=('GPL')
 install=$pkgname.install
 depends=('buc' 'zenity' 'xorg-xrandr')
-if [ "${CARCH}" = 'x86_64' ]; then
-	ARCH='amd64'
-	source=(http://dl.dropbox.com/u/877248/$ARCH/burg-manager-$pkgver-linux-2.6-$ARCH.deb \
-                'big-patch.patch' \
-                 'archlogo.png')          
-	md5sums=('529d095d4b5c6f13d8ad37cb50499a59'  # burg-manager-1.0.5-linux-2.6-amd64.deb
-	         'a7668c136fb4a6d6dc3aa880addeeb7b'  # big-patch.patch
-		 '11674318c93275ae88ff9af770734c0e') # archlinux logo
-    else
-    	ARCH='i386'
-	source=(http://dl.dropbox.com/u/877248/$ARCH/burg-manager-$pkgver-linux-2.6-$ARCH.deb \
-                 'big-patch.patch' \
-                 'archlogo.png')
-	md5sums=('102557b1edd01b0d5c58ba2b60bf0d45'  # burg-manager-1.0.5-linux-2.6-i386.deb
-	         'a7668c136fb4a6d6dc3aa880addeeb7b'  # big-patch.patch
-		 '11674318c93275ae88ff9af770734c0e') # archlinux logo
-fi
+source=(http://dl.dropbox.com/u/11529444/$pkgname/arch/arch-$pkgname-$pkgver.tar.gz)
+md5sums=(85f8313d06233d68abe25080d2b9d86b)
 package() {
-  ar -xv burg-manager-$pkgver-linux-2.6-$ARCH.deb
-  tar -xvf data.tar.gz
-  # patch to move all config files to /etc/burg-manager
-  patch -Np1 -i ${srcdir}/big-patch.patch
-  mkdir -p $pkgdir/usr/ 
+  cp -Rv $srcdir/arch-$pkgname-$pkgver/* $pkgdir/
   mkdir -p $pkgdir/etc/burg-manager
-  #changing logo XD
-  mv -v usr/share/burg-manager/images/install.png usr/share/burg-manager/images/old.png
-  mv -v ${srcdir}/archlogo.png usr/share/burg-manager/images/install.png 
-  mv -v usr/* $pkgdir/usr/
+
 }
 
 
