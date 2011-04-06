@@ -4,10 +4,9 @@
                     |____|__| |_____|_____|__|__||__||____||__|__|
 
 
-My Pkgbuilds for Archlinux and Chakra linux
+My Pkgbuilds for Archlinux 
 
-The chakra pkgbuilds for burg are the ones that are allready on the repos I lost the originals 
-Here is a list of the pkgbuilds
+
 
 Archlinux :
 
@@ -23,23 +22,3 @@ docky-stacks-bzr 	               Docky with stacks plugin (bzr branch)
 gio-sharp-commit 		       A branch of the official gtk-sharp/gio t(last working commit for docky)	
 xf86driproto-git 	               X11 DRI extension wire protocol
 
-Chakra:
-
-aircrack-ng-svn 	 		WEP / WPA crack tools -- with SQLite3 and airolib-ng support.	 
-aircrack-ng-unstable-svn 		WEP / WPA crack tools -- with SQLite3 and unstable (read experimental) tools	 
-b43-firmware 				Firmware for Broadcom B43 wireless networking chips	 
-bespin-black-icons 			Bespin/Tibanna ksplash themes	
-bespin-svn 1264-1			Bespin/Tibanna ksplash themes	 
-bespin-svn-kdm-themes 			Bespin/Tibanna ksplash themes	
-bespin-svn-ksplash-themes 		Bespin/Tibanna ksplash themes	 
-compat-wireless-patched 		compat wireless drivers for aircrack(stable)	 
-compat-wireless-patched-daily 		compat wireless drivers for aircrack(daily builds)	
-kdedecor-dekorator-kde4-svn 		The dekorator window decoration for KDE 4.	
-libmpdclient 				An asynchronous API library for interfacing MPD in the C, C++ & Objective C languages	 
-macchanger 1				A small utility to change you NIC's MAC address	 
-memtest86+ 				An advanced memory diagnostic tool	 
-mpc 					A minimalist command line interface to MPD, not to be confused with musepack	
-mpd 					Music daemon that plays MP3, FLAC, and Ogg Vorbis files	 
-pacman-color 				Command-line frontend for libalpm aka pacman with color patch	 
-python-mpd 				Python MPD client library	 
-sonata 					Elegant GTK+ music client for MPD
