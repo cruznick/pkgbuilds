@@ -1,11 +1,11 @@
 # Maintainer: Benjamin Mtz (cruznick) <cruznick at archlinux dot us>
+
 pkgname=mpd
-pkgver=0.16
-pkgrel=2
+pkgver=0.16.2
+pkgrel=1
 pkgdesc="Music daemon that plays MP3, FLAC, and Ogg Vorbis files"
 arch=('i686' 'x86_64')
 license=('GPL')
-changelog=$pkgname.changelog
 url="http://mpd.wikia.com/wiki/Server"
 depends=('libao' 'ffmpeg' 'libmodplug' 'audiofile' 'libshout' 'libmad' 'curl' 'faad2'
          'sqlite3' 'libsamplerate' 'libmms' 'wavpack' 'libmpcdec' 'avahi' 'libid3tag'
@@ -14,7 +14,7 @@ makedepends=('pkgconfig' 'doxygen')
 install=${pkgname}.install
 source=("http://downloads.sourceforge.net/musicpd/${pkgname}-${pkgver}.tar.bz2"
         'mpd')
-md5sums=('3fc8ccc4488cbaadc1a10f415eada35f'
+md5sums=('dedb75cef8e489f3de5231031876fb77'
          'e5669c2bff4031928531e52475addeb1')
 
 build() {
