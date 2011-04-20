@@ -10,21 +10,27 @@ My Pkgbuilds for Archlinux
 
 
 
-* b43-fwcutter-git 		       
+* B43 Fwcutter Git 		       
+
 ----
 
 >Firmware extractor for the bcm43xx kernel module - git revision
 >Project Url: <http://linuxwireless.org/en/users/Drivers/b43>
 >Aur Url: <https://aur.archlinux.org/packages.php?ID=34093>	
 
-* buc 		                       
+* Buc 		                       
+
 ----
 
+
 >Transforms common bash script in GUI applications written in QT
+
 >Project Url: <http://buc.billeragroup.net>	
+
 >Aur Url: <https://aur.archlinux.org/packages.php?ID=18372>
 
 * Burg Bzr 	                       
+
 ----
 
 >A brand-new boot loader based on GRUB.
@@ -32,6 +38,7 @@ My Pkgbuilds for Archlinux
 >Aur Url: <https://aur.archlinux.org/packages.php?ID=33382>	 
 
 * Burg Emu 	                       
+
 ----
 
 >A brand-new boot loader based on GRUB.(emu)
