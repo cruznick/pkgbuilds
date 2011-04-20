@@ -15,8 +15,8 @@ My Pkgbuilds for Archlinux
 ----
 
 >Firmware extractor for the bcm43xx kernel module - git revision
->Project Url: <http://linuxwireless.org/en/users/Drivers/b43>
->Aur Url: <https://aur.archlinux.org/packages.php?ID=34093>	
+Project Url: <http://linuxwireless.org/en/users/Drivers/b43>
+Aur Url: <https://aur.archlinux.org/packages.php?ID=34093>	
 
 * Buc 		                       
 
