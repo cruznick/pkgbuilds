@@ -24,9 +24,7 @@ My Pkgbuilds for Archlinux
 
 
 >Transforms common bash script in GUI applications written in QT
-
 >Project Url: <http://buc.billeragroup.net>	
-
 >Aur Url: <https://aur.archlinux.org/packages.php?ID=18372>
 
 * Burg Bzr 	                       
